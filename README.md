@@ -350,6 +350,7 @@
             ctx.strokeStyle = '#fff';
             ctx.setLineDash([5, 5]);
             ctx.beginPath();
+            
             ctx.moveTo(canvas.width / 2, 0);
             ctx.lineTo(canvas.width / 2, canvas.height);
             ctx.stroke();
@@ -394,7 +395,6 @@
 
         // Initial draw
         draw();
-        requestAnimationFrame(animate);
-    </script>
+        requestAnimationFrame(animate);2de1dc5d2308389645ef995c37f8d7f6848fbec2    </script>
 </body>
 </html>
