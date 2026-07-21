@@ -1,4 +1,14 @@
-<!DOCTYPE html>
+// Add these features:
+1. **Sound Effects** - Ball hits, scoring, winning sounds
+2. **Difficulty Levels** - Easy, Medium, Hard modes
+3. **Visual Effects** - Paddle glow, ball trail, impact effects
+4. **Power-ups** - Larger paddle, slower ball, etc.
+5. **Mobile Support** - Touch controls for phones/tablets
+6. **Better Graphics** - Smooth animations, particle effects
+7. **Game Stats** - Rally counter, best score tracking
+8. **Keyboard Shortcuts** - Speed up/slow down ball, reset
+9. **Paddle Trails** - Visual feedback of paddle movement
+10. **Win Animations** - Confetti, celebration effects<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
