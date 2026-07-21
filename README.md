@@ -1,14 +1,4 @@
-// Add these features:
-1. **Sound Effects** - Ball hits, scoring, winning sounds
-2. **Difficulty Levels** - Easy, Medium, Hard modes
-3. **Visual Effects** - Paddle glow, ball trail, impact effects
-4. **Power-ups** - Larger paddle, slower ball, etc.
-5. **Mobile Support** - Touch controls for phones/tablets
-6. **Better Graphics** - Smooth animations, particle effects
-7. **Game Stats** - Rally counter, best score tracking
-8. **Keyboard Shortcuts** - Speed up/slow down ball, reset
-9. **Paddle Trails** - Visual feedback of paddle movement
-10. **Win Animations** - Confetti, celebration effects<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -71,6 +61,7 @@
             border-radius: 10px;
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
             margin: 0 auto;
+            cursor: none;
         }
 
         .instructions {
@@ -100,6 +91,40 @@
             margin-top: 15px;
             font-size: 1.1em;
             height: 30px;
+            font-weight: bold;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .difficulty {
+            margin-top: 15px;
+            color: #fff;
+        }
+
+        .difficulty button {
+            margin: 0 5px;
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid #4db8ff;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .difficulty button:hover {
+            background: #4db8ff;
+            color: #000;
+        }
+
+        .difficulty button.active {
+            background: #4db8ff;
+            color: #000;
         }
     </style>
 </head>
@@ -121,6 +146,13 @@
         <canvas id="gameCanvas" width="800" height="400"></canvas>
 
         <div class="status" id="status">Press SPACE to start</div>
+
+        <div class="difficulty">
+            <p>Difficulty:</p>
+            <button id="easyBtn" class="active">Easy</button>
+            <button id="mediumBtn">Medium</button>
+            <button id="hardBtn">Hard</button>
+        </div>
 
         <div class="instructions">
             <h3>How to Play:</h3>
@@ -178,6 +210,7 @@
         // Game state
         let gameRunning = false;
         let gamePaused = false;
+        let difficulty = 0.8; // Easy by default
 
         // Keyboard input
         const keys = {};
@@ -213,6 +246,32 @@
             const rect = canvas.getBoundingClientRect();
             mouseY = e.clientY - rect.top;
         });
+
+        // Difficulty buttons
+        document.getElementById('easyBtn').addEventListener('click', () => {
+            difficulty = 0.6;
+            updateDifficultyButtons('easy');
+        });
+
+        document.getElementById('mediumBtn').addEventListener('click', () => {
+            difficulty = 0.8;
+            updateDifficultyButtons('medium');
+        });
+
+        document.getElementById('hardBtn').addEventListener('click', () => {
+            difficulty = 1.0;
+            updateDifficultyButtons('hard');
+        });
+
+        function updateDifficultyButtons(selected) {
+            document.getElementById('easyBtn').classList.remove('active');
+            document.getElementById('mediumBtn').classList.remove('active');
+            document.getElementById('hardBtn').classList.remove('active');
+            
+            if (selected === 'easy') document.getElementById('easyBtn').classList.add('active');
+            else if (selected === 'medium') document.getElementById('mediumBtn').classList.add('active');
+            else if (selected === 'hard') document.getElementById('hardBtn').classList.add('active');
+        }
 
         function startGame() {
             gameRunning = true;
@@ -268,7 +327,6 @@
             // Computer AI - track the ball
             const computerCenter = computer.y + computer.height / 2;
             const ballCenter = ball.y;
-            const difficulty = 0.8; // Lower = easier
 
             if (computerCenter < ballCenter - 35 && computer.y < canvas.height - computer.height) {
                 computer.y += computer.speed * difficulty;
@@ -294,7 +352,6 @@
             ) {
                 ball.dx = -ball.dx;
                 ball.x = player.x + player.width + ball.radius;
-                // Add spin based on where the ball hits the paddle
                 ball.dy += (ball.y - (player.y + player.height / 2)) * 0.1;
             }
 
@@ -305,7 +362,6 @@
             ) {
                 ball.dx = -ball.dx;
                 ball.x = computer.x - ball.radius;
-                // Add spin based on where the ball hits the paddle
                 ball.dy += (ball.y - (computer.y + computer.height / 2)) * 0.1;
             }
 
@@ -324,7 +380,7 @@
                 resetBall();
             }
 
-            // Cap ball speed to prevent it from going too fast
+            // Cap ball speed
             const maxSpeed = 8;
             const currentSpeed = Math.sqrt(ball.dx ** 2 + ball.dy ** 2);
             if (currentSpeed > maxSpeed) {
@@ -360,7 +416,53 @@
             ctx.strokeStyle = '#fff';
             ctx.setLineDash([5, 5]);
             ctx.beginPath();
-            
+            ctx.moveTo(canvas.width / 2, 0);
+            ctx.lineTo(canvas.width / 2, canvas.height);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Draw paddles
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+            ctx.fillRect(computer.x, computer.y, computer.width, computer.height);
+
+            // Draw ball
+            ctx.fillStyle = '#ffff00';
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Draw ball glow effect
+            ctx.strokeStyle = 'rgba(255, 255, 0, 0.5)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.radius + 3, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+
+        function gameLoop() {
+            update();
+            draw();
+
+            if (gameRunning) {
+                requestAnimationFrame(gameLoop);
+            }
+        }
+
+        function animate() {
+            draw();
+            requestAnimationFrame(animate);
+        }
+
+        // Initial draw
+        draw();
+        animate();
+
+        // Log for debugging
+        console.log('Pong Game Loaded! Press SPACE to start');
+    </script>
+</body>
+</html>            
             ctx.moveTo(canvas.width / 2, 0);
             ctx.lineTo(canvas.width / 2, canvas.height);
             ctx.stroke();
