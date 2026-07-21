@@ -130,7 +130,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>🎮 PONG GAME</h1>
+        <h1>🎮 PONG GAME made by Subar Cal</h1>
         
         <div class="scoreboard">
             <div class="score-item">
